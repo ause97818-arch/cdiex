@@ -1,18 +1,22 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/img", "destination": "/index.html" },
-    { "source": "/img/:path*", "destination": "https://res.cloudinary.com/wdhnno7y/image/upload/:path*" },
-
+    { "source": "/img", "destination": "/img.html" },
     { "source": "/video", "destination": "/video.html" },
-    { "source": "/video/:path*", "destination": "https://res.cloudinary.com/wdhnno7y/video/upload/:path*" },
-
     { "source": "/audio", "destination": "/audio.html" },
-    { "source": "/audio/:path*", "destination": "https://res.cloudinary.com/wdhnno7y/video/upload/:path*" },
-
     { "source": "/sticker", "destination": "/sticker.html" },
-    { "source": "/sticker/:path*", "destination": "https://res.cloudinary.com/wdhnno7y/image/upload/:path*" },
-
     { "source": "/doc", "destination": "/doc.html" },
-    { "source": "/doc/:path*", "destination": "https://res.cloudinary.com/wdhnno7y/raw/upload/:path*" }
+    { "source": "/", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
   ]
 }
