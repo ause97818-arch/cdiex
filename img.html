@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Image to URL · CDN FILES</title>
+<meta name="description" content="Upload an image and get a permanent CDN link in seconds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-1:#eef2f7;
+  --bg-2:#e3e9f1;
+  --surface:#edf2f8;
+  --shadow-d:#c3cddb;
+  --shadow-l:#ffffff;
+  --text-1:#1e2733;
+  --text-2:#6b7684;
+  --text-3:#9aa5b3;
+  --accent:#2f5dff;
+  --accent-dark:#1e42d6;
+  --accent-soft:#e8edff;
+  --success:#12b76a;
+  --success-soft:#e6f9ef;
+  --danger:#f04438;
+  --danger-soft:#fdeceb;
+  --r-xl:32px;
+  --r-lg:24px;
+  --r-md:18px;
+  --r-sm:12px;
+  --r-full:999px;
+  --page-accent:var(--accent);
+  --page-accent-dark:var(--accent-dark);
+  --page-accent-soft:var(--accent-soft);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  font-family:'Inter',-apple-system,sans-serif;
+  background:
+    radial-gradient(1100px 560px at 8% -8%, #f4f8fc 0%, transparent 58%),
+    radial-gradient(900px 480px at 108% 6%, #eaf0ff 0%, transparent 55%),
+    linear-gradient(160deg, var(--bg-1), var(--bg-2));
+  background-attachment:fixed;
+  color:var(--text-1);
+  padding-bottom:120px;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Outfit',sans-serif}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;border:none;cursor:pointer;background:none;color:inherit}
+img,video{display:block;max-width:100%}
+.wrap{max-width:960px;margin:0 auto;padding:28px 20px 0}
+
+/* ---------- neumorphism primitives ---------- */
+.neu-raised{
+  background:var(--surface);
+  box-shadow:9px 9px 18px var(--shadow-d), -9px -9px 18px var(--shadow-l);
+}
+.neu-raised-sm{
+  background:var(--surface);
+  box-shadow:5px 5px 11px var(--shadow-d), -5px -5px 11px var(--shadow-l);
+}
+.neu-inset{
+  background:var(--surface);
+  box-shadow:inset 6px 6px 13px var(--shadow-d), inset -6px -6px 13px var(--shadow-l);
+}
+.neu-flat{
+  background:var(--surface);
+  box-shadow:3px 3px 7px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+}
+
+/* ---------- top brand row ---------- */
+.brandrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{
+  width:44px;height:44px;border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--accent);
+}
+.brand-mark svg{width:22px;height:22px}
+.brand-name{font-family:'Outfit',sans-serif;font-weight:700;font-size:17px;letter-spacing:.2px}
+.brand-tag{font-size:12px;color:var(--text-3)}
+.status-chip{
+  font-size:12px;font-weight:600;color:var(--text-2);
+  padding:9px 16px;border-radius:var(--r-full);
+  display:flex;align-items:center;gap:7px;
+}
+.status-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+
+/* ---------- top bar (subpages) ---------- */
+.topbar{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.back-btn{
+  width:46px;height:46px;min-width:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);transition:box-shadow .15s, color .15s, transform .15s;
+}
+.back-btn:hover{color:var(--page-accent);transform:translateX(-2px)}
+.back-btn:active{box-shadow:inset 4px 4px 9px var(--shadow-d), inset -4px -4px 9px var(--shadow-l)}
+.back-btn svg{width:19px;height:19px}
+.header-text h1{font-size:21px;font-weight:600;letter-spacing:-.2px}
+.header-text p{font-size:12.5px;color:var(--text-3);margin-top:2px;letter-spacing:.3px;text-transform:uppercase}
+
+/* ---------- status pill ---------- */
+.status-pill-wrap{display:flex;justify-content:center;margin:6px 0 26px}
+.status-pill{
+  font-size:12.5px;font-weight:700;letter-spacing:.6px;color:var(--page-accent);
+  padding:10px 22px;border-radius:var(--r-full);
+  background:var(--page-accent-soft);
+}
+
+/* ---------- upload card ---------- */
+.upload-card{
+  border-radius:var(--r-xl);
+  padding:14px;
+  margin-bottom:20px;
+}
+.upload-zone{
+  border-radius:var(--r-lg);
+  padding:46px 20px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;cursor:pointer;
+  transition:box-shadow .2s ease;
+  position:relative;
+}
+.upload-zone.drag-over{box-shadow:inset 3px 3px 8px var(--shadow-d), inset -3px -3px 8px var(--shadow-l), 0 0 0 2px var(--page-accent)}
+.upload-icon{
+  width:64px;height:64px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--page-accent);margin-bottom:18px;
+}
+.upload-icon svg{width:26px;height:26px}
+.upload-title{font-size:15px;font-weight:600;color:var(--text-1);margin-bottom:6px}
+.upload-title span{color:var(--page-accent)}
+.upload-formats{font-size:12px;color:var(--text-3);letter-spacing:.4px}
+.upload-limit{font-size:11px;color:var(--text-3);margin-top:14px;opacity:.8}
+
+/* ---------- progress ---------- */
+.progress-wrap{margin:0 6px 20px;border-radius:var(--r-full);padding:5px;display:none}
+.progress-wrap.show{display:block}
+.progress-track{height:8px;border-radius:var(--r-full);overflow:hidden}
+.progress-bar{height:100%;width:0%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--page-accent),var(--page-accent-dark));transition:width .18s ease}
+.progress-label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-3);margin:8px 4px 0}
+
+/* ---------- result card ---------- */
+.result-card{
+  border-radius:var(--r-xl);
+  padding:22px;
+  margin-bottom:20px;
+  display:none;
+}
+.result-card.show{display:block;animation:rise .35s ease}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.result-top{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+.result-preview{
+  width:64px;height:64px;border-radius:var(--r-md);
+  overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center;
+  color:var(--page-accent);
+}
+.result-preview img,.result-preview video{width:100%;height:100%;object-fit:cover}
+.result-preview svg{width:26px;height:26px}
+.result-name{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.link-ready{
+  margin-left:auto;flex:none;display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:700;color:var(--success);
+  background:var(--success-soft);padding:8px 12px;border-radius:var(--r-full);
+}
+.link-ready svg{width:13px;height:13px}
+.meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.meta-cell{border-radius:var(--r-md);padding:12px 14px}
+.meta-cell .k{font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.meta-cell .v{font-size:13px;font-weight:600;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.url-bar{
+  border-radius:var(--r-full);
+  padding:6px 6px 6px 20px;
+  display:flex;align-items:center;gap:10px;
+}
+.url-bar input{
+  flex:1;background:none;border:none;font-size:13px;color:var(--text-2);
+  outline:none;min-width:0;font-family:'Inter',monospace;
+}
+.copy-btn{
+  flex:none;display:flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--page-accent),var(--page-accent-dark));
+  padding:12px 20px;border-radius:var(--r-full);
+  box-shadow:4px 4px 10px var(--shadow-d);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.copy-btn:hover{transform:translateY(-1px)}
+.copy-btn:active{transform:translateY(0)}
+.copy-btn svg{width:14px;height:14px}
+.copy-btn.copied{background:linear-gradient(135deg,var(--success),#0e9c5c)}
+
+/* ---------- error ---------- */
+.error-banner{
+  display:none;align-items:center;gap:10px;
+  border-radius:var(--r-md);padding:14px 16px;margin-bottom:20px;
+  background:var(--danger-soft);color:var(--danger);font-size:13px;font-weight:600;
+}
+.error-banner.show{display:flex}
+.error-banner svg{width:16px;height:16px;flex:none}
+
+/* ---------- footer ---------- */
+.footer{
+  text-align:center;font-size:11.5px;color:var(--text-3);
+  letter-spacing:.3px;padding:30px 20px 10px;
+}
+
+/* ---------- bottom nav ---------- */
+.bottom-nav{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+  display:flex;gap:6px;padding:8px;border-radius:var(--r-full);
+  z-index:40;max-width:94vw;overflow-x:auto;
+}
+.bottom-nav::-webkit-scrollbar{display:none}
+.nav-link{
+  flex:none;display:flex;align-items:center;gap:8px;
+  padding:12px 18px;border-radius:var(--r-full);
+  font-size:12.5px;font-weight:600;color:var(--text-2);
+  transition:box-shadow .15s ease, color .15s ease;
+}
+.nav-link svg{width:16px;height:16px}
+.nav-link:hover{color:var(--nav-color,var(--accent))}
+.nav-link:active{box-shadow:inset 3px 3px 7px var(--shadow-d), inset -3px -3px 7px var(--shadow-l)}
+
+/* ---------- home grid ---------- */
+.hero{margin-bottom:28px}
+.hero h1{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px}
+.hero p{font-size:14px;color:var(--text-2);max-width:440px;line-height:1.55}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.card{
+  border-radius:var(--r-xl);
+  padding:24px;
+  display:flex;flex-direction:column;gap:16px;
+  transition:transform .2s ease, box-shadow .2s ease;
+  position:relative;overflow:hidden;
+}
+.card:hover{transform:translateY(-5px)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between}
+.card-icon{
+  width:52px;height:52px;border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:center;
+}
+.card-icon svg{width:23px;height:23px}
+.card-arrow{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--text-3);
+  transition:transform .2s ease, color .2s ease;
+}
+.card:hover .card-arrow{transform:rotate(45deg);color:var(--card-color)}
+.card-arrow svg{width:14px;height:14px}
+.card h3{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.card p{font-size:12.5px;color:var(--text-3);letter-spacing:.3px;margin-top:4px}
+.card-wide{grid-column:1 / -1;flex-direction:row;align-items:center;justify-content:space-between}
+.card-wide .card-left{display:flex;align-items:center;gap:18px}
+.card-wide .card-txt h3{margin-bottom:4px}
+
+@media (max-width:640px){
+  .grid{grid-template-columns:1fr}
+  .card-wide{flex-direction:row}
+  .wrap{padding:22px 16px 0}
+  .meta-grid{grid-template-columns:1fr 1fr}
+  .meta-grid .meta-cell:last-child{grid-column:1 / -1}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+:focus-visible{outline:2px solid var(--page-accent);outline-offset:2px;border-radius:8px}
+
+</style>
+</head>
+<body style="--page-accent:#2f5dff;--page-accent-dark:#1e42d6;--page-accent-soft:#e8edff">
+<div class="wrap">
+
+  <div class="topbar">
+    <button class="back-btn neu-raised-sm" onclick="location.href='/'" aria-label="Back to dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="header-text">
+      <h1>Image to URL</h1>
+      <p>Linkify · permanent hosting</p>
+    </div>
+  </div>
+
+  <div class="status-pill-wrap">
+    <div class="status-pill neu-flat">• IMAGE → URL</div>
+  </div>
+
+  <div class="error-banner neu-flat" id="errorBanner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg><span id="errorText">Something went wrong. Try again.</span></div>
+
+  <div class="upload-card neu-raised">
+    <div class="upload-zone neu-inset" id="dropZone" tabindex="0" role="button" aria-label="Upload an image">
+      <div class="upload-icon neu-raised-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 01-1-8.9A5.5 5.5 0 0116.8 8.4 4.5 4.5 0 0117 18H7z"/><path d="M12 17V9M9 11.5L12 8.5l3 3"/></svg></div>
+      <p class="upload-title">Drag &amp; drop or <span>click to upload</span></p>
+      <p class="upload-formats">JPG · PNG · WEBP · GIF</p>
+      <p class="upload-limit">Up to 10&nbsp;MB per file</p>
+      <input type="file" id="fileInput" accept="image/*" hidden>
+    </div>
+  </div>
+
+  <div class="progress-wrap neu-raised" id="progressWrap">
+    <div class="progress-track neu-inset">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-label"><span id="progressStatus">Uploading…</span><span id="progressPct">0%</span></div>
+  </div>
+
+  <div class="result-card neu-raised" id="resultCard">
+    <div class="result-top">
+      <div class="result-preview neu-flat" id="resultPreview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4.5"/><circle cx="8.5" cy="8.5" r="1.4"/><path d="M21 15.5l-5.2-5.2-4 4-2.6-2.6-6.2 6.2"/></svg></div>
+      <div style="min-width:0">
+        <div class="result-name" id="resultName">—</div>
+      </div>
+      <div class="link-ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span>Link Ready</span></div>
+    </div>
+    <div class="meta-grid">
+      <div class="meta-cell neu-inset"><div class="k">Format</div><div class="v" id="metaFormat">—</div></div>
+      <div class="meta-cell neu-inset"><div class="k">Size</div><div class="v" id="metaSize">—</div></div>
+      <div class="meta-cell neu-inset"><div class="k">Type</div><div class="v" id="metaType">—</div></div>
+    </div>
+    <div class="url-bar neu-inset">
+      <input id="urlOutput" readonly value="">
+      <button class="copy-btn" id="copyBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 012-2h10"/></svg><span>Copy</span></button>
+    </div>
+  </div>
+
+  <p class="footer">CDN FILES · Powered by Dev. BUNNY M.</p>
+</div>
+
+<nav class="bottom-nav neu-raised">
+  <a class="nav-link neu-flat" href="/video" style="--nav-color:#7c5cfc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="14.5" height="13" rx="3.5"/><path d="M17 9.3l5-3v11.4l-5-3"/></svg><span>Video</span></a>
+      <a class="nav-link neu-flat" href="/audio" style="--nav-color:#12b76a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5v-1M6.5 9.5v6.5M10 5.5v13M13.5 8v8M17 4v16M20.5 9.5v6.5"/></svg><span>Audio</span></a>
+      <a class="nav-link neu-flat" href="/sticker" style="--nav-color:#ff5c93"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3H8.5A5.5 5.5 0 003 8.5v7A5.5 5.5 0 008.5 21h6a1 1 0 00.7-.3l5.5-5.5a1 1 0 00.3-.7V8.5A5.5 5.5 0 0014.5 3z"/><path d="M15 21v-4a2 2 0 012-2h4"/></svg><span>Sticker</span></a>
+      <a class="nav-link neu-flat" href="/doc" style="--nav-color:#f79009"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.5h8l5 5v14h-13z"/><path d="M14.5 2.5v5h5"/><path d="M9 13h6M9 16.5h6M9 9.5h1.5"/></svg><span>Document</span></a>
+</nav>
+
+<script>
+(function(){
+  const CLOUD_NAME = 'wdhnno7y';
+  const UPLOAD_PRESET = 'linkify_unsigned';
+  const RESOURCE_TYPE = 'image';
+
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
+  const progressPct = document.getElementById('progressPct');
+  const progressStatus = document.getElementById('progressStatus');
+  const resultCard = document.getElementById('resultCard');
+  const resultPreview = document.getElementById('resultPreview');
+  const resultName = document.getElementById('resultName');
+  const metaFormat = document.getElementById('metaFormat');
+  const metaSize = document.getElementById('metaSize');
+  const metaType = document.getElementById('metaType');
+  const urlOutput = document.getElementById('urlOutput');
+  const copyBtn = document.getElementById('copyBtn');
+  const errorBanner = document.getElementById('errorBanner');
+  const errorText = document.getElementById('errorText');
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') fileInput.click(); });
+  ['dragenter','dragover'].forEach(evt => dropZone.addEventListener(evt, e => {
+    e.preventDefault(); dropZone.classList.add('drag-over');
+  }));
+  ['dragleave','drop'].forEach(evt => dropZone.addEventListener(evt, e => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+  }));
+  dropZone.addEventListener('drop', e => {
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+  fileInput.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (f) handleFile(f);
+  });
+
+  function humanSize(bytes){
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/(1024*1024)).toFixed(2) + ' MB';
+  }
+
+  function showError(msg){
+    errorText.textContent = msg;
+    errorBanner.classList.add('show');
+    setTimeout(() => errorBanner.classList.remove('show'), 5000);
+  }
+
+  function handleFile(file){
+    errorBanner.classList.remove('show');
+    resultCard.classList.remove('show');
+    resultPreview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4.5"/><circle cx="8.5" cy="8.5" r="1.4"/><path d="M21 15.5l-5.2-5.2-4 4-2.6-2.6-6.2 6.2"/></svg>';
+
+    if (RESOURCE_TYPE === 'image' && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => { resultPreview.innerHTML = '<img src="' + e.target.result + '" alt="preview">'; };
+      reader.readAsDataURL(file);
+    }
+
+    uploadFile(file);
+  }
+
+  function uploadFile(file){
+    const url = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/' + RESOURCE_TYPE + '/upload';
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET);
+
+    progressWrap.classList.add('show');
+    progressBar.style.width = '0%';
+    progressPct.textContent = '0%';
+    progressStatus.textContent = 'Uploading…';
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+
+    xhr.upload.onprogress = function(e){
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        progressBar.style.width = pct + '%';
+        progressPct.textContent = pct + '%';
+      }
+    };
+
+    xhr.onload = function(){
+      progressWrap.classList.remove('show');
+      if (xhr.status >= 200 && xhr.status < 300) {
+        let data;
+        try { data = JSON.parse(xhr.responseText); } catch(err) { showError('Unexpected response from server.'); return; }
+        renderResult(file, data);
+      } else {
+        let msg = 'Upload failed. Please try again.';
+        try { const err = JSON.parse(xhr.responseText); if (err.error && err.error.message) msg = err.error.message; } catch(e){}
+        showError(msg);
+      }
+    };
+
+    xhr.onerror = function(){
+      progressWrap.classList.remove('show');
+      showError('Network error — check your connection and try again.');
+    };
+
+    xhr.send(formData);
+  }
+
+  function renderResult(file, data){
+    const secureUrl = data.secure_url || data.url;
+    const ext = (data.format || file.name.split('.').pop() || '—').toUpperCase();
+    resultName.textContent = file.name;
+    metaFormat.textContent = ext;
+    metaSize.textContent = humanSize(file.size);
+    metaType.textContent = file.type || 'application/octet-stream';
+    urlOutput.value = secureUrl;
+
+    if (RESOURCE_TYPE === 'video' && file.type.startsWith('video/')) {
+      resultPreview.innerHTML = '<video src="' + secureUrl + '" muted playsinline></video>';
+    } else if (file.type.startsWith('audio/')) {
+      resultPreview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5v-1M6.5 9.5v6.5M10 5.5v13M13.5 8v8M17 4v16M20.5 9.5v6.5"/></svg>';
+    } else if (RESOURCE_TYPE === 'raw') {
+      resultPreview.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.5h8l5 5v14h-13z"/><path d="M14.5 2.5v5h5"/></svg>';
+    }
+
+    resultCard.classList.add('show');
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  copyBtn.addEventListener('click', () => {
+    if (!urlOutput.value) return;
+    navigator.clipboard.writeText(urlOutput.value).then(() => {
+      const span = copyBtn.querySelector('span');
+      const original = span.textContent;
+      span.textContent = 'Copied';
+      copyBtn.classList.add('copied');
+      setTimeout(() => { span.textContent = original; copyBtn.classList.remove('copied'); }, 1800);
+    });
+  });
+})();
+</script>
+</body>
+</html>
